@@ -8,20 +8,52 @@
 
 import UIKit
 
+
+@objc protocol ViewControllerDelegate:class {
+    @objc func showView() -> Void
+    init(controller:UIViewController)
+}
+
+
+class ViewControllerModel:ViewControllerDelegate {
+    fileprivate var vc:ViewController?
+    
+    internal required init(controller: UIViewController) {
+        vc = controller as? ViewController
+    }
+
+    
+    internal func showView() {
+        let mvvmVC = vc?.storyboard?.instantiateViewController(withIdentifier: "MVVMViewController") as! MVVMViewController
+        
+        let model  = Person(name: "uwei", age: 27)
+        let viewModel = ViewModel(person: model)
+        mvvmVC.viewModel = viewModel
+        
+        vc?.present(mvvmVC, animated: true, completion: nil)
+    }
+}
+
+
+
 class ViewController: UIViewController {
 
     private var button:UIButton = UIButton()
+    private var vcModel:ViewControllerDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        
+        vcModel = ViewControllerModel(controller: self)
+        
         button.frame = CGRect(x: 100, y: 200, width: 44, height: 44)
-//        button.setTitle("Click", for:.normal)
         button.setTitle("click", for: UIControlState.selected)
-        button.backgroundColor = UIColor.black()
-        button.addTarget(self, action: #selector(ViewController.showView), for: UIControlEvents.touchUpInside)
-//        button.addTarget(self, action: , forControlEvents: UIControlEvents.TouchUpInside)
+        button.backgroundColor = UIColor.black
+        button.addTarget(vcModel!, action: #selector(vcModel!.showView), for: UIControlEvents.touchUpInside)
         self.view.addSubview(button)
+        
+        
     }
 
     override func didReceiveMemoryWarning() {
@@ -31,13 +63,7 @@ class ViewController: UIViewController {
 
     
     func showView() -> Void {
-        let mvvmVC = storyboard?.instantiateViewController(withIdentifier: "MVVMViewController") as! MVVMViewController
         
-        let model  = Person(name: "uwei", age: 27)
-        let viewModel = ViewModel(person: model)
-        mvvmVC.viewModel = viewModel
-        
-        self.present(mvvmVC, animated: true, completion: nil)
     }
 
 }

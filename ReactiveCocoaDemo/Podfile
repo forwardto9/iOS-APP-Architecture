@@ -1,0 +1,9 @@
+platform :ios, '9.0'
+use_frameworks!
+
+def pods
+  pod 'ReactiveCocoa', '~> 4.1.0'
+end
+target 'ReactiveCocoaDemo' do
+  pods
+end

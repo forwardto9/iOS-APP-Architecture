@@ -10,27 +10,15 @@ import UIKit
 
 
 @objc protocol ViewControllerDelegate:class {
-    @objc func showView() -> Void
-    init(controller:UIViewController)
+    @objc var viewDidChange:((ViewControllerDelegate)->Void)?{get set}
+    @objc func showView()
 }
 
 
 class ViewControllerModel:ViewControllerDelegate {
-    fileprivate var vc:ViewController?
-    
-    internal required init(controller: UIViewController) {
-        vc = controller as? ViewController
-    }
-
-    
-    internal func showView() {
-        let mvvmVC = vc?.storyboard?.instantiateViewController(withIdentifier: "MVVMViewController") as! MVVMViewController
-        
-        let model  = Person(name: "uwei", age: 27)
-        let viewModel = ViewModel(person: model)
-        mvvmVC.viewModel = viewModel
-        
-        vc?.present(mvvmVC, animated: true, completion: nil)
+    var viewDidChange: ((ViewControllerDelegate) -> Void)?
+    func showView() {
+        self.viewDidChange!(self)
     }
 }
 
@@ -39,13 +27,23 @@ class ViewControllerModel:ViewControllerDelegate {
 class ViewController: UIViewController {
 
     private var button:UIButton = UIButton()
-    private var vcModel:ViewControllerDelegate?
+    private var vcModel:ViewControllerDelegate? {
+        didSet {
+            vcModel?.viewDidChange = { [unowned self] vcModel in
+                let mvvmVC = self.storyboard?.instantiateViewController(withIdentifier: "MVVMViewController") as! MVVMViewController
+                let model  = Person(name: "uwei", age: 27)
+                let viewModel = ViewModel(person: model)
+                mvvmVC.viewModel = viewModel
+                self.present(mvvmVC, animated: true, completion: nil)
+            }
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        vcModel = ViewControllerModel(controller: self)
+        vcModel = ViewControllerModel()
         
         button.frame = CGRect(x: 100, y: 200, width: 44, height: 44)
         button.setTitle("click", for: UIControlState.selected)

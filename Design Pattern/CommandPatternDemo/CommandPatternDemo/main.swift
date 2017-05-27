@@ -21,11 +21,11 @@ class Receiver {
 }
 
 class Command: CommandProtocol{
-    private var receiver:Receiver?
+    var receiver:Receiver?
     
-    init(rcv:Receiver) {
-        receiver = rcv
-    }
+//    init(rcv:Receiver) {
+//        receiver = rcv
+//    }
     
     @objc func execute() -> Void {
         self.receiver?.action()
@@ -46,7 +46,10 @@ class Invoker {
 
 // 命令模式的目的就是达到命令的发出者和执行者之间解耦，实现请求和执行分开(NSInvocation)
 let receiver = Receiver()
-let command  = Command(rcv: receiver)
+//let command  = Command(rcv: receiver)
+let command  = Command()
+command.receiver = receiver
+
 let invoker = Invoker(cmd: command)
 invoker.action()
 

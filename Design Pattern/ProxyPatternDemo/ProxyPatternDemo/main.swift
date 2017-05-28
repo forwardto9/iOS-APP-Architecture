@@ -16,24 +16,31 @@ protocol Protocol {
 
 class Original:Protocol {
     func method() {
-        print("Original method!")
+        print("Original method be called!")
     }
 }
 
 class Proxy:Protocol {
-    private var delegate:Protocol?
-    init() {
-        delegate = Original()
+    fileprivate var delegate:Protocol?
+    init(withPurchased:Bool) {
+        if withPurchased {
+            delegate = Original()
+        }
     }
     
     func method() ->Void {
-        delegate?.method()
+        if self.delegate != nil {
+            delegate?.method()
+        } else {
+            print("Proxy method is called!")
+        }
+        
     }
     
 }
 
 // 代理类代替了Original类做同样的事情
-let proxy = Proxy()
+let proxy = Proxy(withPurchased: false)
 proxy.method()
 
 // 如果已有的方法在使用的时候需要对原有的方法进行改进，此时有两种办法：

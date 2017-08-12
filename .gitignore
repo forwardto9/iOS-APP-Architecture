@@ -1,0 +1,16 @@
+
+*.xcuserstate
+
+*.xcscheme
+
+Design Pattern/BuilderPatterDemo/BuilderPatterDemo.xcodeproj/xcuserdata/uwei.xcuserdatad/xcschemes/xcschememanagement.plist
+
+Design Pattern/FlyWeightPatternDemo/FlyWeightPatternDemo.xcodeproj/xcuserdata/uwei.xcuserdatad/xcschemes/xcschememanagement.plist
+
+Design Pattern/MementoPatterDemo/MementoPatterDemo.xcodeproj/xcuserdata/uwei.xcuserdatad/xcschemes/xcschememanagement.plist
+
+Design Pattern/ProxyPatternDemo/ProxyPatternDemo.xcodeproj/xcuserdata/uwei.xcuserdatad/xcschemes/xcschememanagement.plist
+
+MVVMPatternDemo/MVVMPatternDemo.xcodeproj/xcuserdata/forwardto9.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist
+
+MVVMPatternDemo/MVVMPatternDemo.xcodeproj/xcuserdata/forwardto9.xcuserdatad/xcschemes/xcschememanagement.plist

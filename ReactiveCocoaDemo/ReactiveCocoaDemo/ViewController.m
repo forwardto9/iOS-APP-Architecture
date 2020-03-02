@@ -7,8 +7,9 @@
 //
 
 #import "ViewController.h"
-#import <ReactiveCocoa/ReactiveCocoa.h>
-#import <ReactiveCocoa/RACReturnSignal.h>
+#import <ReactiveObjC/ReactiveObjC.h>
+#import <ReactiveObjC/RACStream.h>
+#import <ReactiveObjC/RACReturnSignal.h>
 
 @interface ViewController ()
 @property (weak, nonatomic) IBOutlet UITextField *text;
@@ -37,14 +38,14 @@
             NSLog(@"signal is destroyed");
         }];
     }];
-//
-//    [signal subscribeNext:^(id x) {
-//        NSLog(@"receive data is %@", x);
-//    }];
-//
-//    [signal subscribeNext:^(id x) {
-//        NSLog(@"receive data is %@", x);
-//    }];
+
+    [signal subscribeNext:^(id x) {
+        NSLog(@"1 - receive data is %@", x);
+    }];
+
+    [signal subscribeNext:^(id x) {
+        NSLog(@"2 - receive data is %@", x);
+    }];
 
     
     RACSubject *subject = [RACSubject subject];
@@ -74,7 +75,7 @@
     
     // for event
     RACCommand *command = [[RACCommand alloc] initWithSignalBlock:^RACSignal *(id input) {
-        NSLog(@"execute command");
+        NSLog(@"execute command %@", input);
         return [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
             [subscriber sendNext:@"Request Data"];
             [subscriber sendCompleted];
@@ -85,8 +86,12 @@
     
     [command.executionSignals subscribeNext:^(id x) {
         [x subscribeNext:^(id x) {
-            NSLog(@"-----%@", x);
+            NSLog(@"command-----%@", x);
         }];
+    }];
+    
+    [command.executionSignals.switchToLatest subscribeNext:^(id  _Nullable x) {
+        NSLog(@"command-----%@", x);
     }];
     
     [[command.executing skip:1] subscribeNext:^(id x) {
@@ -111,6 +116,7 @@
     }];
     
     
+    // 当一个信号被多次订阅，避免多次调用创建信号中的block
     RACMulticastConnection *connection = [signal publish];
     [connection.signal subscribeNext:^(id x) {
         NSLog(@"Subscriber 1");
@@ -150,29 +156,32 @@
         return nil;
     }];
     
+    // 应用场景：当依赖多个信号完成之后才执行逻辑
     [self rac_liftSelector:@selector(emptyMethodData1:d2:) withSignalsFromArray:@[signal, signal2]];
     
     
-    // bind
-    [[self.text.rac_textSignal bind:^RACStreamBindBlock{
-        return ^RACStream *(id value, BOOL *stop) {
-            return [RACReturnSignal return:[NSString stringWithFormat:@"Output:%@", value]];
+    // bind // 有一种应用场景，字典转模型
+    [[self.text.rac_textSignal bind:^RACSignalBindBlock _Nonnull{
+        return ^RACSignal * (id value, BOOL *stop) {
+            return [RACReturnSignal return:value];
         };
     }] subscribeNext:^(id x) {
-        NSLog(@"%@", x);
+        NSLog(@"bind %@", x);
     }];
     
-    
-    [[self.text.rac_textSignal flattenMap:^RACStream *(id value) {
+    // 将信号映射成一个新的信号，flattenMap 比 map 更适合处理信号中包含信号
+    [[self.text.rac_textSignal flattenMap:^__kindof RACSignal * _Nullable(NSString * _Nullable value) {
+        //
         return [RACReturnSignal return:[NSString stringWithFormat:@"Output:%@", value]];
-    }] subscribeNext:^(id x) {
-        NSLog(@"%@", x);
-    }];
+    }] subscribeNext:^(id  _Nullable x) {
+         NSLog(@"flattenMap %@", x);
+    }] ;
     
+
     [[self.text.rac_textSignal map:^id(id value) {
         return [NSString stringWithFormat:@"Output:%@", value];
     }] subscribeNext:^(id x) {
-        NSLog(@"%@",x);
+        NSLog(@"map %@",x);
     }];
     
     
@@ -211,19 +220,19 @@
     }];
     
     [[self.text.rac_textSignal ignore:@"d"] subscribeNext:^(id x) {
-        NSLog(@"%@", x);
+        NSLog(@"ignore %@", x);
     }];
     
     [[self.text.rac_textSignal distinctUntilChanged] subscribeNext:^(id x) {
-        NSLog(@"%@", x);
+        NSLog(@"distinctUntilChanged %@", x);
     }];
     
     [[signal takeLast:1] subscribeNext:^(id x) {
-        NSLog(@"%@", x);
+        NSLog(@"takeLast %@", x);
     }];
     
     [[signal2 take:1] subscribeNext:^(id x) {
-        NSLog(@"%@", x);
+        NSLog(@"take %@", x);
     }];
     
     [self.text.rac_textSignal takeUntil:self.rac_willDeallocSignal];

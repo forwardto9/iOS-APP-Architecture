@@ -81,8 +81,8 @@ class MVVMViewController: UIViewController {
         
         button.frame = CGRect(x:frame.width/2 - 32, y:frame.height/2 - 22, width:64, height:44)
         button.backgroundColor = UIColor.black
-        button.setTitle("Set", for: UIControlState.selected)
-        button.addTarget(viewModel, action: #selector(ViewModel.showGreeting), for: UIControlEvents.touchUpInside)
+        button.setTitle("Set", for: UIControl.State.selected)
+        button.addTarget(viewModel, action: #selector(ViewModel.showGreeting), for: UIControl.Event.touchUpInside)
         self.view.addSubview(button)
         
         label.frame  = CGRect(x:frame.width/2 - 60, y:frame.height/2 - 50, width:120, height:40)

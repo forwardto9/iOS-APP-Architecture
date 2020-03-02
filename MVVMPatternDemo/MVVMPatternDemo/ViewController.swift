@@ -46,9 +46,9 @@ class ViewController: UIViewController {
         vcModel = ViewControllerModel()
         
         button.frame = CGRect(x: 100, y: 200, width: 44, height: 44)
-        button.setTitle("click", for: UIControlState.selected)
+        button.setTitle("click", for: UIControl.State.selected)
         button.backgroundColor = UIColor.black
-        button.addTarget(vcModel!, action: #selector(vcModel!.showView), for: UIControlEvents.touchUpInside)
+        button.addTarget(vcModel!, action: #selector(vcModel!.showView), for: UIControl.Event.touchUpInside)
         self.view.addSubview(button)
         
         

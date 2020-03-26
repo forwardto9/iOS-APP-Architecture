@@ -10,7 +10,9 @@ import Foundation
 
 print("Hello, World!")
 
-
+/// 抽象类和接口的区别在于使用动机。
+/// 使用抽象类是为了代码的复用
+/// 使用接口的动机是为了实现多态性
 
 protocol IMobileStorage {
     func read() -> Void

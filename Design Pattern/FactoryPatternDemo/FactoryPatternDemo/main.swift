@@ -13,7 +13,7 @@ print("Hello, World!")
 
 
 let f = Factory()
-let b:Bird? = f.createBird("Parrot")
+let b:Bird? = f.createBird(name: "Parrot")
 b?.Sound();
 
 

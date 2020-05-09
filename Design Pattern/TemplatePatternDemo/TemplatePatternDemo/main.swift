@@ -16,7 +16,7 @@ class AbstractCaculator {
     
     // 私有功能性方法
     private func splitString(expresion:String, option:Character) -> [Int] {
-        let array = expresion.characters.split(option)
+        let array = expresion.split(separator: option)
         let intValue1 = Int(String(array[0]))
         let intValue2 = Int(String(array[1]))
         return [intValue1!, intValue2!]
@@ -25,8 +25,8 @@ class AbstractCaculator {
     
     // 主方法，调用被子类覆盖的方法
     func caculate(expresion:String, option:Character) ->Int {
-        let array = splitString(expresion, option: option)
-        return caculate(array[0], num2: array[1])
+        let array = splitString(expresion: expresion, option: option)
+        return caculate(num1: array[0], num2: array[1])
     }
 }
 
@@ -40,4 +40,4 @@ class Plus:AbstractCaculator {
 
 // 一个抽象类中，有一个主方法，再定义1...n个方法，可以是抽象的，也可以是实际的方法，定义一个类，继承该抽象类，重写抽象方法，通过调用抽象类，实现对子类的调用
 let caculator = Plus()
-print("Result is \(caculator.caculate("123+234", option: "+"))")
+print("Result is \(caculator.caculate(expresion: "123+234", option: "+"))")

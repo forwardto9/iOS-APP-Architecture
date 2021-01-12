@@ -1,7 +1,14 @@
-*.xcuserstate
-
-*.xcscheme
-
+*.xcuserdatad/
+!contents.xcworkspacedata
 xcuserdata/
+xcshareddata/
+!xcschemes/
+!xcbaselines/
 
-Pod/
+
+#pods
+
+Pods/
+Podfile.lock
+!Podfile
+!Podfile.lockOSInjectionProject/

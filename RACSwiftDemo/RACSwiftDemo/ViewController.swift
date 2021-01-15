@@ -47,15 +47,23 @@ class ViewController: UIViewController {
         }
         
         let action = Action<(Int), Int, Error>(execute: spg)
+        let action1 = Action<(Int), Int, Error>(execute: spg)
         
-        action.values.observeResult({ value in
-            print("Time elapsed = \(value)")
-        })
+//        action.values.take(first: 2).observeResult({ value in
+//            print("Time elapsed = \(value)")
+//        })
+        
+        action.values.combineLatest(with: action.values).observeValues { (arg0) in
+            let (v1, v2) = arg0
+            print("Time elapsed = \(v1)-----\(v2)")
+        }
+        
         action.values.observeCompleted {
             print("completed!")
         }
         
         action.apply(1).start()
+        action1.apply(2).start()
 //        action.apply(10).start()
     }
     

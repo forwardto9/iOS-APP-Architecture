@@ -534,6 +534,35 @@ typedef NS_ENUM(NSUInteger, SCOrderPayState) {
     self.title = SCLocalizedStringWithKey(@"支付结果");
     [self.view addSubview:self.resultMainView];
     [self bindViewModel];
+    
+    RACSignal *signal = [RACSignal createSignal:^RACDisposable * _Nullable(id<RACSubscriber>  _Nonnull subscriber) {
+        [subscriber sendNext:@"xxxxxxxxxx"];
+        return [RACDisposable disposableWithBlock:^{
+            NSLog(@"++++++++");
+        }];
+    }];
+    [signal subscribeNext:^(id  _Nullable x) {
+        NSLog(@"signal01--------- %@", x);
+    }];
+    [signal subscribeNext:^(id  _Nullable x) {
+        NSLog(@"signal02--------- %@", x);
+    }];
+    
+    RACSubject *subject = [RACSubject subject];
+    
+    [subject subscribeNext:^(id x) {
+        NSLog(@"订阅者1---------%@", x);
+    }];
+    
+    [subject sendNext:@"subject1"];
+    
+    [subject subscribeNext:^(id x) {
+        NSLog(@"订阅者2--------%@", x);
+    }];
+    
+    [subject sendNext:@"subject2"];
+    
+    
 }
 
 - (void)updateViewConstraints {

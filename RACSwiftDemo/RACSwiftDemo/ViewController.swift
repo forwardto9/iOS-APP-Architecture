@@ -9,6 +9,8 @@ import UIKit
 import SnapKit
 import ReactiveCocoa
 import ReactiveSwift
+// 信号操作 https://juejin.cn/post/6844903524799610888#heading-23
+// 信号的绑定等 https://juejin.cn/post/6844903525596528653#heading-9
 
 class ViewController: UIViewController {
 

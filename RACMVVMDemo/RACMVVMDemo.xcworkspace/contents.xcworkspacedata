@@ -4,7 +4,10 @@
    <FileRef
       location = "group:RACMVVMDemo.xcodeproj">
    </FileRef>
+<<<<<<< HEAD
+=======
    <FileRef
       location = "group:Pods/Pods.xcodeproj">
    </FileRef>
+>>>>>>> 4dccfa2c92649b48c0fa9ad00ca2ecf56f325294
 </Workspace>

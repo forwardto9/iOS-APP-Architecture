@@ -38,6 +38,7 @@ class ViewController: UIViewController {
                             return
                         }
                         observer.send(value: timeElapsed)
+                        print("observer.send")
                         if index == 9 {
                             observer.sendCompleted()
                         }

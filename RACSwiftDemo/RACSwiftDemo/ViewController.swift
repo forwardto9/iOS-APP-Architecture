@@ -133,6 +133,15 @@ class ViewController: UIViewController {
         spg1.startWithResult({ value in
             print("value from signalProducer1 = \(value)")
         })
+        spg1.startWithCompleted {
+            print("signalProducer1 end")
+        }
+        spg1.startWithFailed { (err) in
+            print(err)
+        }
+        spg1.startWithInterrupted {
+            print("interrupt")
+        }
         
         spg2.startWithResult({ value in
             print("value from signalProducer2 = \(value)")
@@ -165,7 +174,8 @@ class ViewController: UIViewController {
             print("interrupted")
         })
         
-        sp.start(o)
+        //  此处的disposable可以用来在其他时机取消任务
+        let disposable = sp.start(o)
         
     }
     
@@ -173,12 +183,6 @@ class ViewController: UIViewController {
     func createSignalBySignal() -> Void {
         // 管道创建signal和observer
         let (output, input) = Signal<Int, Error>.pipe()
-        for i in 0..<10 {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0 * Double(i)) {
-                input.send(value: i)
-            }
-        }
-        
         let o = Signal<Int, Error>.Observer(value: {
             value in
             print("\(value)")
@@ -187,8 +191,33 @@ class ViewController: UIViewController {
         }, interrupted: {
             print("interrupted")
         })
+    
+        let disposable = output.observe(o)
+        // 此处资源管理会导致回调不会被调用
+//        disposable?.dispose()
         
-        output.observe(o)
+        // Operation 001，参看连接
+        let transformedSignal = output.map { (value) -> Bool in
+            value > 2
+        }
+        
+        let ob = Signal<Bool, Error>.Observer { (result) in
+            print(result)
+        } failed: { (err) in
+            
+        } completed: {
+            
+        } interrupted: {
+            
+        }
+        let disp2 = transformedSignal.observe(ob)
+        
+        for i in 0..<10 {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0 * Double(i)) {
+//                input.send(value: i)
+                input.send(Signal<Int, Error>.Event.value(i))
+            }
+        }
     }
     
     

@@ -16,20 +16,52 @@ class ViewController: UIViewController {
 
     private var textFiled:UITextField?
     private var button:UIButton?
+    // 重要：如果是元组，每一个元变化，则数据回调都会被触发
+    var datas:MutableProperty<(data:[[String]], action:Int)>!
+    
+    var data1 = [String]()
+    var data2 = [String]()
+    
+    var action:Action<(),[String]?, Error>!
     
     override func viewDidLoad() {
         super.viewDidLoad()
 //        initUI()
 //        bind()
-        createActionBySignalProducer()
+        
+        datas = MutableProperty((data:[data1, data2], action:1))
+        action = Action<(), [String]?, Error> (execute: {
+            return self.createAction()
+        })
+        
+        
+        datas.signal.observeValues { (x) in
+            print("action")
+        }
+        
+        action.apply().start()
+        action.apply().start()
+        
+//        createActionBySignalProducer()
         
         // Do any additional setup after loading the view.
     }
     
+    func createAction() -> SignalProducer<[String]?, Error> {
+        return SignalProducer<[String]?, Error> { (ob, li) in
+            self.datas.value = ([["uwei"]], 1)
+            ob.sendCompleted()
+        }
+    }
     
     func createActionBySignalProducer() -> Void {
         let spg:(Int) -> SignalProducer<Int, Error> = { timeInterval in
             return SignalProducer<Int, Error> { (observer, lifetime) in
+                observer.send(value: timeInterval)
+//                if timeInterval == 2 {
+                    observer.sendCompleted()
+//                }
+                return
                 let now = DispatchTime.now()
                 print("start index")
                 for index in 0..<10 {
@@ -56,17 +88,23 @@ class ViewController: UIViewController {
 //            print("Time elapsed = \(value)")
 //        })
         
-        action.values.combineLatest(with: action.values).observeValues { (arg0) in
-            let (v1, v2) = arg0
-            print("Time elapsed = \(v1)-----\(v2)")
-        }
-        
-        action.values.observeCompleted {
-            print("completed!")
+//        action.values.combineLatest(with: action.values).observeValues { (arg0) in
+//            let (v1, v2) = arg0
+//            print("Time elapsed = \(v1)-----\(v2)")
+//        }
+//
+//        action.values.observeCompleted {
+//            print("completed!")
+//        }
+//        action.values.producer.startWithValues { (x) in
+//            print("actions producer \(x)")
+//        }
+        action.values.signal.take(last: 1).observeValues { (x) in
+            print("actions signal \(x)")
         }
         
         action.apply(1).start()
-        action1.apply(2).start()
+        action.apply(2).start()
 //        action.apply(10).start()
     }
     

@@ -9,7 +9,7 @@
 import UIKit
 
 
-@objc protocol ViewControllerDelegate:class {
+@objc protocol ViewControllerDelegate:AnyObject {
     @objc var viewDidChange:((ViewControllerDelegate)->Void)?{get set}
     @objc func showView()
 }

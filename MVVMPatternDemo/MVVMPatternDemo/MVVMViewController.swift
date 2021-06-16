@@ -15,7 +15,7 @@ struct Person {
 
 // class 关键字表明这个Protocol只能是 class 才能采纳的 struct 或者是 enumeration 都是不可以的
 // interface
-protocol ViewModelProtocol:class {
+protocol ViewModelProtocol:AnyObject {
     var greeting:String? {get}
     
     // hook by block
@@ -47,6 +47,30 @@ class ViewModel: ViewModelProtocol {
     }
 }
 
+class ViewClass: UIView {
+    var button:UIButton = UIButton()
+    var label:UILabel   = UILabel()
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        button.frame = CGRect(x:frame.width/2 - 32, y:frame.height/2 - 22, width:64, height:44)
+        button.backgroundColor = UIColor.black
+        button.setTitle("Set", for: UIControl.State.selected)
+        
+        addSubview(button)
+        
+        label.frame  = CGRect(x:frame.width/2 - 60, y:frame.height/2 - 50, width:120, height:40)
+        label.backgroundColor = UIColor.blue
+        label.textColor = UIColor.white
+        label.text      = "Default"
+        addSubview(label)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
 
 class MVVMViewController: UIViewController {
     // 也是可以的，但是这只能将数据的逻辑处理放到了控制器中，增加了耦合，而且在响应UI操作的时候，也只能放到控制器中，耦合性大增
@@ -63,34 +87,23 @@ class MVVMViewController: UIViewController {
         didSet {
 //            self.viewModel.greetingDidChange = { [unowned self] viewModel in
             self.viewModel.greetingDidChange = {
-                self.label.text = self.viewModel.greeting
+                self.viewClass.label.text = self.viewModel.greeting
             }
+            viewClass.button.addTarget(self.viewModel, action: #selector(ViewModel.showGreeting), for: UIControl.Event.touchUpInside)
         }
     }
     
-    private var button:UIButton = UIButton()
-    private var label:UILabel   = UILabel()
+    lazy var viewClass:ViewClass = {
+        let v = ViewClass(frame: view.frame)
+        return v
+    }()
+   
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        view.addSubview(viewClass)
         // Do any additional setup after loading the view.
-        
-        let frame = self.view.frame
-        
-        button.frame = CGRect(x:frame.width/2 - 32, y:frame.height/2 - 22, width:64, height:44)
-        button.backgroundColor = UIColor.black
-        button.setTitle("Set", for: UIControl.State.selected)
-        button.addTarget(viewModel, action: #selector(ViewModel.showGreeting), for: UIControl.Event.touchUpInside)
-        self.view.addSubview(button)
-        
-        label.frame  = CGRect(x:frame.width/2 - 60, y:frame.height/2 - 50, width:120, height:40)
-        label.backgroundColor = UIColor.blue
-        label.textColor = UIColor.white
-        label.text      = "Default"
-        self.view.addSubview(label)
-
     }
 
     override func didReceiveMemoryWarning() {

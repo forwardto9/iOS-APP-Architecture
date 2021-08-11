@@ -24,10 +24,16 @@ class ViewController: UIViewController {
     
     var action:Action<(),[String]?, Error>!
     
+    var result:MutableProperty<Bool> = MutableProperty(false) {
+        didSet {
+            print("set")
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-//        initUI()
-//        bind()
+        initUI()
+        bind()
         
         datas = MutableProperty((data:[data1, data2], action:1))
         action = Action<(), [String]?, Error> (execute: {
@@ -45,6 +51,11 @@ class ViewController: UIViewController {
 //        createActionBySignalProducer()
         
         // Do any additional setup after loading the view.
+        // not working for didSet
+        result.value = false
+        result.value = true
+        // working for didSet , so we should use Action for combine
+        result = MutableProperty(true)
     }
     
     func createAction() -> SignalProducer<[String]?, Error> {
@@ -285,13 +296,9 @@ class ViewController: UIViewController {
         
         button = UIButton(type: .custom)
         button?.backgroundColor = .brown
-        button?.setTitle("asldfjasldfjasldf", for: .normal)
+        button?.setTitle("Click", for: .normal)
         self.view.addSubview(button!)
-        updateViewConstraints()
-    }
-    
-
-    override func updateViewConstraints() {
+        
         textFiled?.snp.makeConstraints({ (make) in
             make.height.equalTo(self.view).dividedBy(10)
             make.width.equalTo(200)
@@ -303,9 +310,6 @@ class ViewController: UIViewController {
             make.centerX.equalTo(textFiled!)
             make.width.height.equalTo(80)
         })
-        
-        
-        super.updateViewConstraints()
     }
     
 }
